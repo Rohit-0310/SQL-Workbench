@@ -11,12 +11,6 @@ select * from StudentScores;
 
 /*
 Easy SQL Questions (5-6 questions)
-1. Calculate the total score for each student by adding the MathScore and ScienceScore.
-2. Calculate the number of classes each student actually attended.
-3. Find the total study hours for each student, assuming each class equals 2 study hours.
-4. Calculate the average score for each student (MathScore + ScienceScore) / 2.
-5. Retrieve the total score of each student where the combined score is greater than 160.
-6. Find students who attended more than 25 classes.
 */
 -- 1. Calculate the total score for each student by adding the MathScore and ScienceScore.??
 
