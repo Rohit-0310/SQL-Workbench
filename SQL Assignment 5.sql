@@ -15,9 +15,12 @@ group by category;
 
 select * from groceryData order by sales desc;
 
-
 -- List all sales in the 'Food Grains' category, sorted in ascending orde by order_id.
 
+-- ALTER TABLE groceryData
+-- CHANGE COLUMN `ï»¿Order ID` orderId varchar(20);
+
+select * from groceryData where category = 'Food Grains' order by orderId;
 
 
 
