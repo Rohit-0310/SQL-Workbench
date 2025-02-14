@@ -90,21 +90,28 @@ limit 5;
 
 -- Get the top 3 largest transactions per region.
 
+with rankedTransactions as (
+    select region, orderId, sales,
+           rank() over(partition by region order by sales desc) as sales_rank
+    from groceryData
+)
 select region, orderId, sales
-from (select region, orderId, sales,
-row_number() over (partition by region order by sales desc) as 'rank'
-from groceryData
-) as ranked
-where 'rank' <= 3;
+from RankedTransactions
+where sales_rank <= 3
+order by region, sales_rank;
 
 
 -- 9. Logical Optimization of Query Execution
-
-
-
-
-
 -- Retrieve the top 10 regions contributing to total sales.
+
+
+select region, sum(sales) as total_sales
+from groceryData
+group by region
+order by total_sales desc
+limit 10;
+
+
 -- 10. Advanced GROUP BY with HAVING
 -- Retrieve category with total sales exceeding $20,000.
 -- Sort by total sales in descending order and return the top 3 categories.
