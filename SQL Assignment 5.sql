@@ -114,9 +114,41 @@ limit 10;
 
 -- 10. Advanced GROUP BY with HAVING
 -- Retrieve category with total sales exceeding $20,000.
+
+select * from groceryData;
+
+select category, sum(sales) as total_sales
+from groceryData
+group by category having total_sales > 20000;
+
+
 -- Sort by total sales in descending order and return the top 3 categories.
 
+select category, sum(sales) as total_sales
+from groceryData
+group by category 
+having total_sales > 20000
+order by total_sales desc
+limit 3;
+
+-- 11. Complex GROUP BY, HAVING, ORDER BY, and LIMIT
+-- Find the top 3 regions where total sales exceeded 2,000, sorted in descending order.
+
+select region, sum(sales) as total_sales
+from groceryData
+group by region having total_sales > 20000
+order by total_sales desc
+limit 3;
+
+-- Retrieve categories with the highest sales per region.
 
 
 
+
+-- 12. Challenging Query Optimization Task
+-- Optimize a query to get the top 3 transactions(sales) in terms of sale_amount.
+
+select * from groceryData
+order by sales desc
+limit 3;
 
