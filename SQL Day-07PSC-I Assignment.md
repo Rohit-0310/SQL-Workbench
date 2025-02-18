@@ -1,21 +1,76 @@
 # Easy Level
-1. Understanding JOINS (Theoretical)
-    Explain the difference between INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN with real-world examples.
-2. Customers & Orders
+## 1. Understanding JOINS (Theoretical)
+    Explain the difference between `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, and `FULL OUTER JOIN` with real-world examples.
+
+Solution:-
+### `INNER JOIN` => It will fetch the row from both the table where common doesn't have any null values.
+    - Imagine we have a student table and a subject table. Inner Join will only give the records who opted for subject and subject which have student.
+
+### `LEFT JOIN` => It will fetch the row from the left table and matching rows from the right table. If there's no matching in the right table then it will return `null` values.
+    - If we Join student table  and subject table then it will return all the students. Even those who have not opted for Subject Yet.
+
+### `RIGHT JOIN` => It will fetch the row from the right table and matching rows from the left table. If there's no matching in the left table then it will return `null` values.
+    - If we Join student table  and subject table then it will return all the subject. Even those where no student is present.
+
+### `FULL OUTER JOIN` => It will return All the rows from both the table irrespective of the null values.
+    - It will return all the rows of student table and all the subject table.
+
+## 2. Customers & Orders
     Given tables:
         customers(customer_id, name, email)
         orders(order_id, customer_id, total_amount, order_date)
     Write an SQL query to:
         Retrieve all customers who have placed an order.
+
+        ```SQL
+        SELECT c.customer_id, c.name, c.email
+        FROM customers c
+        INNER JOIN orders o
+        ON c.customer_id = o.customer_id;
+        ```
         List orders along with the customer names.
+
+        ```SQL
+        SELECT o.order_id, c.name
+        FROM orders o
+        INNER JOIN customers c 
+        ON o.customer_id = c.customer_id;
+        ```
+
         Find customers who haven’t placed any orders.
-3. Employees & Departments
+
+        ```SQL
+        SELECT c.customer_id, c.name, c.email, o.order_id
+        FROM customers c
+        LEFT JOIN orders o ON c.customer_id = o.customer_id
+        WHERE o.order_id IS NULL;
+        ```
+
+
+## 3. Employees & Departments
     Given tables:
         employees(emp_id, name, department_id, salary)
         departments(department_id, dept_name)
-    Write a query to:
+    - Write a query to:
         Retrieve all employees and their department names, ensuring employees without a department are still listed.
+
+```SQL
+SELECT e.emp_id, e.name, d.dept_name
+FROM employees e
+LEFT JOIN departments d
+ON e.department_id = d.department_id;
+```
+
         Find departments that have no employees.
+
+```SQL
+SELECT d.department_id, d.dept_name, e.emp_id
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+WHERE e.emp_id IS NULL;
+```
+
+
 4. Filtering with Aggregation & JOIN
     Given tables:
         students(student_id, name)
@@ -23,8 +78,47 @@
         enrollments(student_id, course_id, grade)
     Write a query to:
         Retrieve the average grade per course.
+
+```SQL
+SELECT c.title, AVG(e.grade) AS Average_Grade
+FROM enrollments e
+JOIN courses c
+ON e.course_id = c.course_id
+GROUP BY c.title;
+```
+
         List students who are not enrolled in any courses.
+
+```SQL
+
+SELECT s.student_id, s.name , e.student_id
+FROM students s
+LEFT JOIN enrollments e
+ON s.student_id = e.student_id
+WHERE e.course_id IS NULL;
+
+```
+
+
         Find students who scored above the course average grade.
+
+```SQL
+
+SELECT e.student_id, s.name, e.course_id, c.title, e.grade
+FROM enrollments e
+JOIN students s ON e.student_id = s.student_id
+JOIN courses c ON e.course_id = c.course_id
+WHERE e.grade > (
+    SELECT AVG(e2.grade)
+    FROM enrollments e2
+    WHERE e2.course_id = e.course_id
+);
+
+
+```
+
+
+
 # Medium Level (Complex JOINS & Aggregations)
 1. Combining Multiple JOINS: Employee & Manager Details
     Given tables:
