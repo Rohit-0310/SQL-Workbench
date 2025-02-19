@@ -3,24 +3,24 @@
     Explain the difference between `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, and `FULL OUTER JOIN` with real-world examples.
 
 Solution:-
-### `INNER JOIN` => It will fetch the row from both the table where common doesn't have any null values.
-    - Imagine we have a student table and a subject table. Inner Join will only give the records who opted for subject and subject which have student.
+`INNER JOIN` => It will fetch the row from both the table where common doesn't have any null values.
+- Imagine we have a student table and a subject table. Inner Join will only give the records who opted for subject and subject which have student.
 
-### `LEFT JOIN` => It will fetch the row from the left table and matching rows from the right table. If there's no matching in the right table then it will return `null` values.
-    - If we Join student table  and subject table then it will return all the students. Even those who have not opted for Subject Yet.
+`LEFT JOIN` => It will fetch the row from the left table and matching rows from the right table. If there's no matching in the right table then it will return `null` values.
+- If we Join student table  and subject table then it will return all the students. Even those who have not opted for Subject Yet.
 
-### `RIGHT JOIN` => It will fetch the row from the right table and matching rows from the left table. If there's no matching in the left table then it will return `null` values.
-    - If we Join student table  and subject table then it will return all the subject. Even those where no student is present.
+`RIGHT JOIN` => It will fetch the row from the right table and matching rows from the left table. If there's no matching in the left table then it will return `null` values.
+- If we Join student table  and subject table then it will return all the subject. Even those where no student is present.
 
-### `FULL OUTER JOIN` => It will return All the rows from both the table irrespective of the null values.
-    - It will return all the rows of student table and all the subject table.
+`FULL OUTER JOIN` => It will return All the rows from both the table irrespective of the null values.
+- It will return all the rows of student table and all the subject table.
 
 ## 2. Customers & Orders
-    Given tables:
+- Given tables:
         customers(customer_id, name, email)
         orders(order_id, customer_id, total_amount, order_date)
-    Write an SQL query to:
-        Retrieve all customers who have placed an order.
+- Write an SQL query to:
+- Retrieve all customers who have placed an order.
 
         ```SQL
         SELECT c.customer_id, c.name, c.email
@@ -48,11 +48,11 @@ Solution:-
 
 
 ## 3. Employees & Departments
-    Given tables:
+- Given tables:
         employees(emp_id, name, department_id, salary)
         departments(department_id, dept_name)
-    - Write a query to:
-        Retrieve all employees and their department names, ensuring employees without a department are still listed.
+- Write a query to:
+- Retrieve all employees and their department names, ensuring employees without a department are still listed.
 
 ```SQL
 SELECT e.emp_id, e.name, d.dept_name
@@ -61,7 +61,7 @@ LEFT JOIN departments d
 ON e.department_id = d.department_id;
 ```
 
-        Find departments that have no employees.
+- Find departments that have no employees.
 
 ```SQL
 SELECT d.department_id, d.dept_name, e.emp_id
@@ -72,12 +72,12 @@ WHERE e.emp_id IS NULL;
 
 
 4. Filtering with Aggregation & JOIN
-    Given tables:
+- Given tables:
         students(student_id, name)
         courses(course_id, title)
         enrollments(student_id, course_id, grade)
-    Write a query to:
-        Retrieve the average grade per course.
+- Write a query to:
+- Retrieve the average grade per course.
 
 ```SQL
 SELECT c.title, AVG(e.grade) AS Average_Grade
@@ -87,7 +87,7 @@ ON e.course_id = c.course_id
 GROUP BY c.title;
 ```
 
-        List students who are not enrolled in any courses.
+- List students who are not enrolled in any courses.
 
 ```SQL
 
@@ -100,7 +100,7 @@ WHERE e.course_id IS NULL;
 ```
 
 
-        Find students who scored above the course average grade.
+- Find students who scored above the course average grade.
 
 ```SQL
 
@@ -120,56 +120,182 @@ WHERE e.grade > (
 
 
 # Medium Level (Complex JOINS & Aggregations)
-1. Combining Multiple JOINS: Employee & Manager Details
-    Given tables:
-        employees(emp_id, name, department_id, salary, manager_id)
+## 1. Combining Multiple JOINS: Ezmployee & Manager Details
+- Given tables:
+        employees(emp_id, name, department_id, salary, manager_id)    
         departments(department_id, dept_name, manager_id)
         managers(manager_id, manager_name, bonus)
     Write an SQL query to:
-        Retrieve all employees with their department name and manager details.
-        Find departments that do not have a manager assigned.
-        Retrieve employees who earn more than their department’s average salary.
-2. Product Sales Analysis with JOINS
-    Given tables:
+- Retrieve all employees with their department name and manager details.
+
+```SQL
+select e.emp_id, e.name, e.salary,m.manager_name,
+m.bonus, d.dept_name
+from employees e
+join departments d 
+on e.department_id = d.department_id
+join managers m on d.manager_id = m.manager_id;
+```
+
+- Find departments that do not have a manager assigned.
+
+```SQL
+SELECT d.dept_name,d.department_id,m.manager_id
+FROM departments d
+LEFT JOIN managers m 
+ON d.manager_id = m.manager_id
+WHERE m.manager_id IS NULL;
+```
+
+
+- Retrieve employees who earn more than their department’s average salary.
+
+```SQL
+select e.emp_id, e.name, d.dept_name, e.salary
+from employees e 
+join departments d ON e.department_id = d.department_id
+where e.salary > (select avg(salary) 
+from employees e1 where e.department_id = e1.department_id);
+```
+
+
+
+## 2. Product Sales Analysis with JOINS
+- Given tables:
         products(product_id, product_name, category)
         orders(order_id, customer_id, order_date)
         order_items(order_item_id, order_id, product_id, quantity, price)
-    Write SQL queries to:
-        Retrieve all products that have never been sold.
-        Find the top 3 best-selling products based on total quantity sold.
-        Get the total revenue per product category.
-3. Advanced Filtering with JOINS: Employee Performance
-    Given tables:
+- Write SQL queries to:
+
+- Retrieve all products that have never been sold.
+```SQL
+select p.product_name, p.product_id, o.order_id
+from products p
+left join order_items o
+on p.product_id = o.product_id
+where o.product_id is NULL;
+```
+- Find the top 3 best-selling products based on total quantity sold.
+```SQL
+select p.product_name, sum(o.quantity) as  Total_Sold
+from products p
+join order_items o
+on p.product_id = o.product_id
+group by p.product_name
+order by Total_Sold desc
+limit 3;
+```
+
+- Get the total revenue per product category.
+
+```SQL
+
+select p.category, sum(o.quantity * o.price) AS Total_Revenue
+from products p
+join order_itemS o
+on p.product_ID = o.product_ID
+group by p.category;
+
+```
+
+
+## 3. Advanced Filtering with JOINS: Employee Performance
+- Given tables:
         employees(emp_id, name, salary, department_id)
         departments(department_id, dept_name, manager_id)
         projects(project_id, project_name, budget)
         employee_projects(emp_id, project_id, role)
-    Write SQL queries to:
-        Retrieve all employees and the projects they are working on.
-        Find employees who are not assigned to any project.
-        List projects that have no employees assigned.
-4. Customer Order Behavior Analysis
-    Given tables:
+- Write SQL queries to:
+- Retrieve all employees and the projects they are working on.
+
+```SQL
+select e.emp_id, e.name, p.project_id, p.Project_Name
+from employees e
+left join employee_projects ep 
+on e.emp_ID = ep.Emp_ID
+left join projects p
+on ep.Project_id = p.Project_id;
+```
+- Find employees who are not assigned to any project.
+
+```SQL
+select e.emp_id, e.name
+from employees e
+left join employee_projects ep 
+on e.emp_id = ep.emp_id
+where ep.project_id is null;
+
+```
+- List projects that have no employees assigned.
+
+```SQL
+select p.project_id, p.project_name
+from projects p
+left join employee_projects ep 
+on ep.project_id = p.project_id
+where ep.emp_id is null;
+```
+## 4. Customer Order Behavior Analysis
+- Given tables:
         customers(customer_id, name, email)
         orders(order_id, customer_id, total_amount, order_date)
-    Write SQL queries to:
-        Find customers who have placed more than 5 orders.
-        Retrieve the total amount spent per customer.
-        Get customers who haven’t placed any orders in the last 6 months.
-5. Mastering Aggregations with HAVING & JOINS
-    Given a sales table with:
+- Write SQL queries to:
+- Find customers who have placed more than 5 orders.
+        
+```SQL
+select c.customer_id,c.name,c.email, 
+count(o.order_id) as Total_Order
+from customers c
+join orders o 
+on o.customer_id = c.customer_id
+group by c.name, c.customer_id
+having count(o.order_id) > 5;
+```
+- Retrieve the total amount spent per customer.
+        
+```SQL
+select c.customer_id, c.name, c.email, 
+sum(o.total_amount) as Total_Spent
+from customers c
+join orders o 
+on o.customer_id = c.customer_id
+group by c.name, c.customer_id;
+```
+
+- Get customers who haven’t placed any orders in the last 6 months.
+        
+```SQL
+select c.customer_id, c.name, c.email
+from customers c
+left join orders o 
+on o.customer_id = c.customer_id and
+ o.order_date >= date_sub(curdate(), INTERVAL 6 MONTH)
+where o.order_id is null;
+```
+
+## 5. Mastering Aggregations with HAVING & JOINS
+- Given a sales table with:
         sale_id, product_name, quantity, price, region
-    Write queries to:
-        Find total revenue per region, but only for regions where revenue exceeds $10,000.
-        Retrieve the lowest revenue-generating product.
-        Get the monthly revenue for the past 6 months.
+- Write queries to:
+- Find total revenue per region, but only for regions where revenue exceeds $10,000.
+```SQL
+
+```
+- Retrieve the lowest revenue-generating product.
+```SQL
+
+```
+- Get the monthly revenue for the past 6 months.
+```SQL
+
+```
 # Hard Level (Advanced JOINS & Real-World Scenarios)
 1. Mastering SQL Joins: Employees, Departments, and Managers
-    Given tables:
+-Given tables:
         employees(emp_id, name, department_id, salary)
         departments(department_id, dept_name, manager_id)
         managers(manager_id, manager_name, bonus)
-    Write SQL queries to:
+- Write SQL queries to:
         Retrieve all employees with their department names and managers.
         Find employees who earn more than their department’s average salary.
         Calculate the total salary expense per manager, including bonus amounts.
