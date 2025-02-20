@@ -280,10 +280,18 @@ where o.order_id is null;
 - Find total revenue per region, but only for regions where revenue exceeds $10,000.
 ```SQL
 
+select region, sum(quantity * price) as Revanue
+from sales
+group by region
+having Revanue > 10000;
 ```
 - Retrieve the lowest revenue-generating product.
 ```SQL
-
+select product_name, sum(quantity * price) as Revanue
+from sales
+group by product_name
+order by Revanue asc
+limit 1;
 ```
 - Get the monthly revenue for the past 6 months.
 ```SQL
@@ -296,9 +304,33 @@ where o.order_id is null;
         departments(department_id, dept_name, manager_id)
         managers(manager_id, manager_name, bonus)
 - Write SQL queries to:
-        Retrieve all employees with their department names and managers.
-        Find employees who earn more than their department’s average salary.
-        Calculate the total salary expense per manager, including bonus amounts.
+- Retrieve all employees with their department names and managers.
+```SQL
+select e.emp_id, e.name, d.dept_name, m.manager_name
+from employees e
+join departments d on d.department_id = e.department_id
+join managers m on m.manager_id = d.manager_id;
+```
+- Find employees who earn more than their department’s average salary.
+```SQL
+select m.manager_id, m.manager_name, 
+sum(e.salary) + m.bonus as total_Expense
+from managers m
+join departments d on m.manager_id = d.manager_id
+join employees e on d.department_id = e.department_id
+group by m.manager_id, m.manager_name, m.bonus;
+```
+- Calculate the total salary expense per manager, including bonus amounts.
+```SQL
+
+select m.manager_id, m.manager_name, 
+sum(e.salary) + m.bonus as total_Expense
+from managers m
+join departments d on m.manager_id = d.manager_id
+join employees e on d.department_id = e.department_id
+group by m.manager_id, m.manager_name, m.bonus;
+
+```
 2. Complex Many-to-Many Relationship: Student-Course Enrollments
     Given tables:
         students(student_id, name)
